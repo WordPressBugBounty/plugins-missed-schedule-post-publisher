@@ -3,9 +3,9 @@ Contributors: ufukart
 Donate link: https://www.paypal.com/donate/?business=53EHQKQ3T87J8&no_recurring=0&currency_code=USD
 Tags: schedule, missed schedule, trigger, scheduled post, missed scheduled posts
 Requires at least: 5.0
-Tested up to: 6.6.1
+Tested up to: 6.7.1
 Requires PHP: 5.6
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
