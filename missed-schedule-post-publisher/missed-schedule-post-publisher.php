@@ -63,7 +63,7 @@ function missed_schedule_post_publisher_manage() {
 	if(isset($_POST["action"]) && $_POST["action"]=="update"){
 		// Wp_nonce check
 		if (!isset($_POST['missed_schedule_post_publisher_update']) || ! wp_verify_nonce( $_POST['missed_schedule_post_publisher_update'], 'missed_schedule_post_publisher_update' ) ) {
-			exit('Sorry, you do not have access to this page! https://www.zumbo.net/missed-schedule-post-publisher-wordpress-plugin/');
+			wp_die('Sorry, you do not have access to this page!');
 		}else{
 			$mspp_execute_time = sanitize_text_field($_POST['mspp_execute_time']);
 			update_option('mspp_execute_time', $mspp_execute_time);
