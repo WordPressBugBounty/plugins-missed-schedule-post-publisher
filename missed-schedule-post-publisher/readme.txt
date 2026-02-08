@@ -3,9 +3,9 @@ Contributors: ufukart
 Donate link: https://www.paypal.com/donate/?business=53EHQKQ3T87J8&no_recurring=0&currency_code=USD
 Tags: schedule, missed schedule, trigger, missed scheduled post, cron
 Requires at least: 5.0
-Tested up to: 6.9
-Requires PHP: 5.6
-Stable tag: 1.0.6
+Tested up to: 6.9.1
+Requires PHP: 7.0
+Stable tag: 2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,7 +152,8 @@ Not at all. The plugin works in the background and doesn't generate additional p
 
 = 📝 Does it work with custom post types? =
 
-Currently, the plugin works with standard WordPress posts (the `post` post type). Support for custom post types may be added in future updates based on user feedback.
+Yes! As of version 2.0, the plugin automatically detects and handles all public Custom Post Types.
+This includes WooCommerce products, Event Calendar items, Portfolio items, and any other custom content types you have on your site.
 
 = 🚀 Can I use this on a high-traffic website? =
 
@@ -220,6 +221,13 @@ For support, feature requests, or bug reports, please visit the [WordPress.org s
 
 == Changelog ==
 
+= 2.0 =
+* **New:** Added support for all public Custom Post Types (CPT), WooCommerce products, and Events.
+* **Improved:** Implemented batch processing (limit 10) to prevent server timeouts on large queues.
+* **Improved:** Admin interface now shows "Last Run" and "Next Run" times in the website's Local Timezone instead of GMT.
+* **Fixed:** Fixed internationalization issue; translation files now load correctly.
+* **Tweak:** Adjusted cron scheduling logic to avoid conflicts on activation.
+
 = 1.0.6 =
 * **Fixed: Failsafe cron mechanism now uses recurring events instead of single events
 * **Fixed: SQL query now orders posts by date to publish oldest first
@@ -233,8 +241,6 @@ For support, feature requests, or bug reports, please visit the [WordPress.org s
 * **Improved: Better form layout using WordPress standards
 
 = 1.0.5 - Major Security & Performance Update =
-**Released: [Date]**
-
 ### 🔒 Security Enhancements
 * **Fixed critical SQL injection vulnerability** using `$wpdb->prepare()` for all database queries
 * **Added comprehensive nonce verification** for all admin form submissions
@@ -277,36 +283,26 @@ For support, feature requests, or bug reports, please visit the [WordPress.org s
 * **Better logging** for debugging purposes
 
 = 1.0.4 =
-**Released: [Date]**
-
 * **Added:** Quick Settings link on the plugins page for easy access
 * **Added:** Donate link to support continued development
 * **Improved:** Plugin action links organization
 
 = 1.0.3 =
-**Released: [Date]**
-
 * **Compatibility:** Fully tested and compatible with PHP 5.6 through PHP 8.2
 * **Improved:** Code optimization for better PHP 8.x compatibility
 * **Improved:** Minor performance enhancements
 * **Fixed:** Deprecated function warnings in PHP 8.x
 
 = 1.0.2 =
-**Released: [Date]**
-
 * **Fixed:** Critical bug causing "Undefined Index" warning in some configurations
 * **Improved:** Error handling for edge cases
 
 = 1.0.1 =
-**Released: [Date]**
-
 * **Changed:** Removed plugin menu from WordPress Toolbar for cleaner interface
 * **Changed:** Moved settings menu under WordPress Settings section
 * **Improved:** Better menu organization and accessibility
 
 = 1.0 - Initial Release =
-**Released: [Date]**
-
 * 🎉 **First public release**
 * ✅ Automatic detection of missed scheduled posts
 * ✅ Customizable check intervals (5, 10, 15, 20, 30, 60 minutes)
@@ -317,6 +313,9 @@ For support, feature requests, or bug reports, please visit the [WordPress.org s
 ---
 
 == Upgrade Notice ==
+
+= 2.0 =
+Major update! Now supports Custom Post Types (CPT) & WooCommerce. Added batch processing for better performance and fixed timezone displays.
 
 = 1.0.5 =
 **IMPORTANT SECURITY UPDATE!** This version fixes critical security vulnerabilities including SQL injection protection. Update immediately! Also includes major performance improvements and full WordPress 6.9 compatibility.
@@ -341,7 +340,7 @@ If Missed Schedule Post Publisher has saved you time and frustration, please con
 
 * ⭐ **[Leave a 5-star review](https://wordpress.org/support/plugin/missed-schedule-post-publisher/reviews/)** - Help others discover this solution
 * 🐛 **[Report bugs or request features](https://wordpress.org/support/plugin/missed-schedule-post-publisher/)** - We value your feedback
-* ☕ **[Buy me a coffee](https://www.paypal.com/donate/?business=53EHQKQ3T87J8&no_recurring=0&currency_code=USD)** - Support continued development
+* ☕ **[Buy me a coffee](https://buymeacoffee.com/ufukart)** - Support continued development
 * 📢 **Share with others** - Help fellow WordPress users avoid the "Missed Schedule" nightmare
 
 ---
@@ -351,7 +350,8 @@ If Missed Schedule Post Publisher has saved you time and frustration, please con
 Created by **UfukArt** - Passionate about solving real WordPress problems with elegant, reliable solutions.
 
 **Other WordPress Plugins:**
-* OptimWP - WordPress Optimization Toolkit
+* [OptimWP](https://wordpress.org/plugins/optimwp/)** - WordPress Optimization Toolkit
+* [Comment Approved Notifier Extended](https://wordpress.org/plugins/comment-approved-notifier-extended/)** - The Comment Approved Notifier Extended plugin for WordPress automatically sends an email notification to the comment author when their comment is approved on your website.
 
 ---
 
