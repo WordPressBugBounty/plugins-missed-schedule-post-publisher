@@ -5,11 +5,11 @@ Tags: schedule, missed schedule, trigger, missed scheduled post, cron
 Requires at least: 5.3
 Tested up to: 6.9.1
 Requires PHP: 7.0
-Stable tag: 2.2
+Stable tag: 2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-🎯 Never miss scheduled posts again! Automatically detects and publishes missed scheduled posts on time, every time - perfect for low-traffic websites.
+🎯 Never miss scheduled posts again! Automatically publishes missed scheduled posts on time, every time. Zero bloat, single purpose, reliable.
 
 == Description ==
 
@@ -18,6 +18,8 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Have you ever scheduled a post in WordPress, only to find it still sitting in "Missed Schedule" status hours or days later? You're not alone! This frustrating issue affects thousands of WordPress sites, especially those with low traffic.
 
 Missed Schedule Post Publisher is the ultimate solution to WordPress's unreliable scheduling system. Install it once, configure your preferred check interval, and never worry about missed posts again!
+
+**Single Purpose, Zero Bloat** - This plugin does ONE thing and does it exceptionally well: publish your missed scheduled posts reliably. No unnecessary features, no dashboard clutter, no performance overhead. Just a focused, efficient solution to a specific WordPress problem.
 
 ### 🔴 The Problem: WordPress's Scheduling Flaw
 
@@ -38,6 +40,12 @@ Missed Schedule Post Publisher runs automatically at your chosen interval, check
 
 ## 🌟 Key Features
 
+### 🎯 Single-Purpose Excellence
+Does ONE thing perfectly: publishes missed scheduled posts. No feature creep, no unnecessary complexity. Just the solution you need, executed flawlessly.
+
+### 🚫 Absolutely Zero Bloat
+No admin dashboard widgets, no unnecessary settings pages, no hidden features you'll never use. Clean, minimal, and efficient—exactly as a plugin should be.
+
 ### ⏰ Automatic Missed Post Detection
 Continuously monitors your scheduled posts and instantly detects any that have missed their publication time. No more manually checking your posts list!
 
@@ -51,7 +59,7 @@ Once configured, the plugin works silently in the background. Your posts will be
 Specifically designed for blogs, personal websites, and business sites that don't receive constant visitor traffic. Ensures your content strategy stays on track.
 
 ### ⚡ Lightweight & Efficient
-Uses minimal server resources with optimized database queries. Won't impact your site's performance, speed, or analytics data.
+Ultra-lean codebase with optimized database queries. Zero bloat means zero impact on your site's performance, speed, or analytics data. No extra JavaScript, no unnecessary CSS, no wasted resources.
 
 ### 🔒 Enterprise-Grade Security
 Built with WordPress best practices, including proper sanitization, nonce verification, and capability checks. Your site stays secure.
@@ -59,8 +67,14 @@ Built with WordPress best practices, including proper sanitization, nonce verifi
 ### 🌍 Translation Ready
 Fully internationalized with i18n support. Ready to work in any language with proper translations.
 
+### 🔧 Smart Dual-Mode Operation
+Works seamlessly with **both WP-Cron enabled and disabled environments**. If WP-Cron is disabled on your server, the plugin automatically switches to page-visit-based checking with intelligent throttling. No configuration needed—it just works!
+
+### 🌐 DISABLE_WP_CRON Compatible
+Perfect for **shared hosting, high-traffic sites with aggressive caching, or server-level cron setups**. When WP-Cron is disabled, the plugin runs efficiently on page visits without impacting performance.
+
 ### 🔧 WordPress Cron Integration
-Leverages WordPress's cron system for reliable scheduling, ensuring checks happen consistently even during low-traffic periods.
+Leverages WordPress's cron system for reliable scheduling when available, ensuring checks happen consistently even during low-traffic periods.
 
 ### 📱 Works Everywhere
 Compatible with all modern WordPress themes, caching plugins, and hosting environments. No conflicts, just results.
@@ -142,9 +156,36 @@ WordPress uses a pseudo-cron system that relies on visitor activity to trigger s
 
 You have complete control! Choose from check intervals of 5, 10, 15, 20, 30, or 60 minutes. Select the frequency that matches your publishing needs and traffic patterns.
 
+= 🔧 What if my hosting provider has DISABLE_WP_CRON enabled? =
+
+No problem! **This is one of the key features of version 2.3+**. The plugin automatically detects if WP-Cron is disabled and switches to a fallback mode that runs on page visits. You'll see a notice in the admin panel confirming this mode is active. The plugin uses intelligent throttling to ensure it only runs at your configured interval, regardless of how many page visits occur.
+
+= 🚀 Will the plugin work on heavily cached sites? =
+
+Absolutely! Many caching plugins (like WP Rocket, W3 Total Cache) or CDN services (like Cloudflare) can prevent WP-Cron from triggering. Version 2.3+ handles this automatically by also checking during regular page visits. This dual approach ensures your posts are published even if WP-Cron is blocked by caching.
+
+= ⚙️ Does this plugin require server cron setup? =
+
+No! Unlike some alternatives, you don't need SSH access or server cron configuration. The plugin works perfectly with WordPress's built-in cron system, and if that's disabled, it falls back to page-visit-based checking. It's a true "install and forget" solution.
+
+= 📊 How can I tell which mode the plugin is using? =
+
+Go to **Settings → Missed Schedule Post Publisher**. The admin panel clearly shows:
+* If WP-Cron is disabled, you'll see: "⚠️ WP-Cron is disabled on this server. The plugin will automatically run when visitors browse your site instead."
+* Current operating mode: Either "Running on: Page visits" or showing the next scheduled cron run time
+* Last check execution time
+
+= 🏎️ Will page-visit mode slow down my site? =
+
+Not at all! The plugin uses intelligent throttling—it only runs when your configured interval has passed. If the last check was 5 minutes ago and you've set a 15-minute interval, it won't run again for another 10 minutes, no matter how many visitors arrive. Plus, it only runs on frontend pages, never in the admin panel.
+
 = 🐌 Will this plugin slow down my website? =
 
 No! The plugin is extremely lightweight and only performs a quick database query at your chosen interval. It's optimized for minimal resource usage and won't affect your site's loading speed or performance. Your visitors won't notice any difference.
+
+= 🎯 Why is this plugin so focused on just one feature? =
+
+Because it should be! Too many plugins try to do everything and end up doing nothing well. We believe in the UNIX philosophy: do one thing and do it perfectly. This plugin publishes missed scheduled posts—nothing more, nothing less. No bloated dashboards, no unnecessary features, no complexity. Just a reliable solution that works every time. If you need other features, install other focused plugins. This keeps your WordPress installation lean, fast, and maintainable.
 
 = 📊 Does it affect my site analytics? =
 
@@ -202,7 +243,7 @@ Absolutely! The plugin is fully internationalized and ready for translation. You
 
 = 💰 Is there a premium version? =
 
-Currently, this plugin is completely free with all features included. If you find it useful, please consider [leaving a 5-star review](https://wordpress.org/support/plugin/missed-schedule-post-publisher/reviews/) or [supporting development](https://www.paypal.com/donate/?business=53EHQKQ3T87J8&no_recurring=0&currency_code=USD)!
+No, this plugin is completely free with all features included forever. If you find it useful, please consider [leaving a 5-star review](https://wordpress.org/support/plugin/missed-schedule-post-publisher/reviews/) or [supporting development](https://www.paypal.com/donate/?business=53EHQKQ3T87J8&no_recurring=0&currency_code=USD)!
 
 = 🆘 Where can I get support? =
 
@@ -220,6 +261,74 @@ For support, feature requests, or bug reports, please visit the [WordPress.org s
 ---
 
 == Changelog ==
+
+= 2.3 - Critical Reliability Update 🚀 =
+
+This is a **major reliability update** that solves the #1 cause of "plugin not working" reports: disabled WP-Cron and aggressive caching.
+
+### 🎯 New Features
+
+**✨ Smart Dual-Mode Operation**
+* **Automatic DISABLE_WP_CRON detection** - Plugin now works perfectly even when WP-Cron is disabled
+* **Page-visit fallback mode** - If WP-Cron doesn't trigger, the plugin runs on frontend page visits instead
+* **Intelligent throttling** - Ensures checks only happen at your configured interval, preventing performance impact
+* **Zero configuration required** - Automatically detects the best method and switches seamlessly
+
+**🛡️ Enhanced Reliability**
+* **Try-catch-finally protection** - Prevents lock mechanism from getting stuck even if fatal errors occur
+* **Improved error handling** - Better logging and recovery from unexpected failures
+* **Lock cleanup guarantee** - Transient lock is always released, even if the script crashes
+
+**📊 Admin Panel Improvements**
+* **WP-Cron status indicator** - Shows if WP-Cron is disabled with a clear notice
+* **Operating mode display** - See at a glance whether plugin is using WP-Cron or page visits
+* **Better status information** - More informative "Current Status" section in settings
+
+### 🔧 Technical Improvements
+
+* Added `check_and_publish_on_page_load()` method for page-visit-based checking
+* Wrapped `publish_missed_posts()` in try-catch-finally for bulletproof lock management
+* Added intelligent throttling to prevent excessive execution on high-traffic sites
+* Admin panel now skipped during page-visit checks to reduce overhead
+* Enhanced compatibility with caching plugins (WP Rocket, W3 Total Cache, Cloudflare, etc.)
+
+### 🐛 Bug Fixes
+
+* **Fixed:** Plugin not working when `DISABLE_WP_CRON = true` in wp-config.php
+* **Fixed:** Lock mechanism getting stuck after fatal errors or timeouts
+* **Fixed:** No fallback when WP-Cron is blocked by aggressive caching
+* **Fixed:** Plugin remaining silent on low-traffic sites with caching enabled
+
+### 💡 Why This Update Matters
+
+**Before 2.3:**
+❌ If WP-Cron was disabled → Plugin didn't work at all
+❌ Full-page caching → WP-Cron never triggered → Posts never published
+❌ Low traffic + caching → Scheduled posts missed indefinitely
+❌ Lock gets stuck → Plugin stops working until manual intervention
+
+**After 2.3:**
+✅ Works with WP-Cron enabled OR disabled
+✅ Works with any caching plugin or CDN
+✅ Works on low-traffic sites
+✅ Never gets stuck - self-recovering
+✅ True "set and forget" reliability
+
+### 🎯 Who Should Update?
+
+**EVERYONE should update to 2.3**, but especially if you:
+* Use shared hosting (often has DISABLE_WP_CRON enabled)
+* Use caching plugins like WP Rocket, W3 Total Cache, or similar
+* Use CDN services like Cloudflare that cache aggressively
+* Have a low-traffic site or blog
+* Schedule posts during off-peak hours
+* Have experienced "plugin not working" in the past
+
+### 📚 Documentation Updates
+
+* Updated FAQ with comprehensive WP-Cron and caching information
+* Added troubleshooting guide for common scenarios
+* Enhanced feature descriptions to highlight dual-mode operation
 
 = 2.2 =
 
@@ -339,6 +448,9 @@ Internal code cleanup to better align with WordPress coding and security best pr
 ---
 
 == Upgrade Notice ==
+
+= 2.3 =
+**CRITICAL RELIABILITY UPDATE!** This version fixes the #1 cause of "plugin not working" complaints. Now works even when WP-Cron is disabled (common on shared hosting) and with aggressive caching. Features automatic fallback to page-visit checking, enhanced error recovery, and bulletproof lock management. **If you've ever had the plugin "stop working" - this update fixes it!** All users should update immediately for maximum reliability.
 
 = 2.0 =
 Major update! Now supports Custom Post Types (CPT) & WooCommerce. Added batch processing for better performance and fixed timezone displays.

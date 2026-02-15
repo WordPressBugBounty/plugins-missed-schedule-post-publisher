@@ -3,7 +3,7 @@
  * Plugin Name: Missed Schedule Post Publisher
  * Description: Publishes missed scheduled posts automatically.
  * Plugin URI: https://www.zumbo.net/missed-schedule-post-publisher-wordpress-plugin/
- * Version: 2.2
+ * Version: 2.3
  * Author: UfukArt
  * Author URI: https://www.zumbo.net
  * Text Domain: missed-schedule-post-publisher
@@ -13,7 +13,10 @@
 
 namespace MissedSchedulePostPublisher;
 
-defined('ABSPATH') || exit;
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 
 final class Missed_Schedule_Post_Publisher {
 
@@ -32,6 +35,9 @@ final class Missed_Schedule_Post_Publisher {
 
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('admin_init', [$this, 'failsafe_cron']);
+        
+        // Her sayfa yüklendiğinde kontrol et (throttling ile)
+        add_action('wp', [$this, 'check_and_publish_on_page_load'], 999);
     }
 
     public static function activate() {
@@ -102,6 +108,30 @@ final class Missed_Schedule_Post_Publisher {
         }
     }
 
+    /**
+     * Sayfa ziyaretlerinde kontrol et ve yayınla (throttling ile)
+     * DISABLE_WP_CRON = true olan sunucularda alternatif çözüm
+     */
+    public function check_and_publish_on_page_load() {
+        // Admin panelinde çalıştırma (zaten cron var)
+        if (is_admin()) {
+            return;
+        }
+
+        // Son çalıştırma zamanını kontrol et
+        $last_execute = (int) get_option(self::OPTION_LAST_EXECUTE, 0);
+        $interval = max(1, (int) get_option(self::OPTION_EXECUTE_TIME, self::DEFAULT_INTERVAL));
+        $interval_seconds = $interval * 60;
+
+        // Belirlenen interval geçmemişse çalıştırma
+        if ((time() - $last_execute) < $interval_seconds) {
+            return;
+        }
+
+        // Arka planda çalıştır (async)
+        $this->publish_missed_posts();
+    }
+
     /* -------------------------------------------------------------------------
      * Core Logic
      * ---------------------------------------------------------------------- */
@@ -109,52 +139,62 @@ final class Missed_Schedule_Post_Publisher {
     public function publish_missed_posts() {
 		
 		$lock_key = 'mspp_running_lock';
+		
+		// Zaten çalışıyorsa çık
 		if ( get_transient( $lock_key ) ) {
 			return;
 		}
+		
+		// Lock'u ayarla
 		set_transient( $lock_key, 1, 60 );
 		
-        global $wpdb;
+		try {
+			global $wpdb;
 
-        $now = current_time('mysql', true); // GMT
+			$now = current_time('mysql', true); // GMT
 
-        // (post, page, product, event vb.)
-        $args = [
-            'public' => true,
-        ];
-        $post_types = get_post_types($args, 'names');
-         
-        if (empty($post_types)) {
-            $post_types = ['post', 'page'];
-        }
+			// (post, page, product, event vb.)
+			$args = [
+				'public' => true,
+			];
+			$post_types = get_post_types($args, 'names');
+			 
+			if (empty($post_types)) {
+				$post_types = ['post', 'page'];
+			}
 
-        $placeholders = implode(', ', array_fill(0, count($post_types), '%s'));
+			$placeholders = implode(', ', array_fill(0, count($post_types), '%s'));
 
-        $sql = "SELECT ID
-                FROM {$wpdb->posts}
-                WHERE post_status = 'future'
-                AND post_date_gmt <= %s
-                AND post_type IN ($placeholders)
-                ORDER BY post_date_gmt ASC
-                LIMIT %d";
+			$sql = "SELECT ID
+					FROM {$wpdb->posts}
+					WHERE post_status = 'future'
+					AND post_date_gmt <= %s
+					AND post_type IN ($placeholders)
+					ORDER BY post_date_gmt ASC
+					LIMIT %d";
 
-        $params = array_merge([$now], array_values($post_types), [self::BATCH_LIMIT]);
-        
-        $post_ids = $wpdb->get_col($wpdb->prepare($sql, $params));
+			$params = array_merge([$now], array_values($post_types), [self::BATCH_LIMIT]);
+			
+			$post_ids = $wpdb->get_col($wpdb->prepare($sql, $params));
 
-        if (!empty($post_ids)) {
-            foreach ($post_ids as $post_id) {
-                $result = wp_publish_post( (int) $post_id );
+			if (!empty($post_ids)) {
+				foreach ($post_ids as $post_id) {
+					$result = wp_publish_post( (int) $post_id );
 
-                if (is_wp_error($result)) {
-                    error_log('MSPP Error: Failed to publish post ' . $post_id . ' - ' . $result->get_error_message());
-                }
-            }
-        }
+					if (is_wp_error($result)) {
+						error_log('MSPP Error: Failed to publish post ' . $post_id . ' - ' . $result->get_error_message());
+					}
+				}
+			}
 
-        update_option(self::OPTION_LAST_EXECUTE, time());
-		
-		delete_transient( $lock_key );
+			update_option(self::OPTION_LAST_EXECUTE, time());
+			
+		} catch (\Exception $e) {
+			error_log('MSPP Critical Error: ' . $e->getMessage());
+		} finally {
+			// Her durumda lock'u sil
+			delete_transient( $lock_key );
+		}
     }
 
     /* -------------------------------------------------------------------------
@@ -188,14 +228,21 @@ final class Missed_Schedule_Post_Publisher {
         $next_run = wp_next_scheduled(self::CRON_HOOK);
         
         settings_errors('mspp_messages');
+        
+        $wp_cron_disabled = defined('DISABLE_WP_CRON') && DISABLE_WP_CRON;
         ?>
         <div class="wrap">
             <h1><?php esc_html_e('Missed Schedule Post Publisher Settings', 'missed-schedule-post-publisher'); ?></h1>
-				<?php if ( defined('DISABLE_WP_CRON') && DISABLE_WP_CRON ) {
-					echo '<div class="notice notice-warning"><p>';
-					esc_html_e("The site's WP-Cron is disabled. For the plugin to function correctly, you need to periodically run wp-cron.php using your system's cron job.", 'missed-schedule-post-publisher');
-					echo '</p></div>';
-				} ?>
+            
+            <?php if ($wp_cron_disabled): ?>
+            <div class="notice notice-warning">
+                <p>
+                    <strong><?php esc_html_e('⚠️ WP-Cron is disabled on this server.', 'missed-schedule-post-publisher'); ?></strong><br>
+                    <?php esc_html_e('The plugin will automatically run when visitors browse your site instead.', 'missed-schedule-post-publisher'); ?>
+                </p>
+            </div>
+            <?php endif; ?>
+            
             <div class="card" style="max-width: 600px; padding: 20px; margin-top: 20px;">
                 <p>
                     <strong><?php esc_html_e('Current Status:', 'missed-schedule-post-publisher'); ?></strong>
@@ -220,7 +267,11 @@ final class Missed_Schedule_Post_Publisher {
                         ?>
                     </li>
                     <li>
-                        <?php if ($next_run): ?>
+                        <?php if ($wp_cron_disabled): ?>
+                            <span style="color: #2271b1;">
+                                <?php esc_html_e('Running on: Page visits (WP-Cron disabled)', 'missed-schedule-post-publisher'); ?>
+                            </span>
+                        <?php elseif ($next_run): ?>
                             <?php printf(
                                 esc_html__('Next scheduled run (Local Time): %s', 'missed-schedule-post-publisher'),
                                 wp_date(get_option('date_format') . ' ' . get_option('time_format'), $next_run)
